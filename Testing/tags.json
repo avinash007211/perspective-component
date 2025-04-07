@@ -1,0 +1,62 @@
+{
+  "name": "Simulation",
+  "tagType": "Folder",
+  "tags": [
+    {
+      "valueSource": "opc",
+      "opcItemPath": "nsu\u003dhttp://www.prosysopc.com/OPCUA/SimulationNodes/;i\u003d1004",
+      "dataType": "Float8",
+      "name": "Sinusoid",
+      "tagType": "AtomicTag",
+      "opcServer": "Prosys Simulation Server"
+    },
+    {
+      "valueSource": "opc",
+      "opcItemPath": "nsu\u003dhttp://www.prosysopc.com/OPCUA/SimulationNodes/;i\u003d1003",
+      "dataType": "Float8",
+      "name": "Sawtooth",
+      "tagType": "AtomicTag",
+      "opcServer": "Prosys Simulation Server"
+    },
+    {
+      "valueSource": "opc",
+      "opcItemPath": "nsu\u003dhttp://www.prosysopc.com/OPCUA/SimulationNodes/;i\u003d1006",
+      "dataType": "Float8",
+      "name": "Triangle",
+      "tagType": "AtomicTag",
+      "opcServer": "Prosys Simulation Server"
+    },
+    {
+      "valueSource": "opc",
+      "opcItemPath": "nsu\u003dhttp://www.prosysopc.com/OPCUA/SimulationNodes/;i\u003d1005",
+      "dataType": "Float8",
+      "name": "Square",
+      "tagType": "AtomicTag",
+      "opcServer": "Prosys Simulation Server"
+    },
+    {
+      "valueSource": "opc",
+      "opcItemPath": "nsu\u003dhttp://www.prosysopc.com/OPCUA/SimulationNodes/;i\u003d1007",
+      "dataType": "Float8",
+      "name": "Constant",
+      "tagType": "AtomicTag",
+      "opcServer": "Prosys Simulation Server"
+    },
+    {
+      "valueSource": "opc",
+      "opcItemPath": "nsu\u003dhttp://www.prosysopc.com/OPCUA/SimulationNodes/;i\u003d1002",
+      "dataType": "Float8",
+      "name": "Random",
+      "tagType": "AtomicTag",
+      "opcServer": "Prosys Simulation Server"
+    },
+    {
+      "valueSource": "opc",
+      "opcItemPath": "nsu\u003dhttp://www.prosysopc.com/OPCUA/SimulationNodes/;i\u003d1001",
+      "dataType": "Int4",
+      "name": "Counter",
+      "tagType": "AtomicTag",
+      "opcServer": "Prosys Simulation Server"
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "name": "karunsystem-tags",
+  "tagType": "Folder",
+  "tags": [
+    {
+      "name": "HelloTag",
+      "tagType": "AtomicTag",
+      "valueSource": "memory",
+      "readOnly": false,
+      "writePermissions": {
+        "type": "AnyOf",
+        "securityLevels": []
+      },
+      "readPermissions": {
+        "type": "AnyOf",
+        "securityLevels": []
+      },
+      "value": "120"
+    },
+    {
+      "name": "Tag12",
+      "tagType": "AtomicTag",
+      "valueSource": "opc",
+      "opcItemPath": "ns=1;s=[Sample_Device][Controls]/baseRateNode",
+      "opcServer": "Ignition OPC UA Server"
+    }
+  ]
+}

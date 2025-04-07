@@ -1,0 +1,48 @@
+<Tags MinVersion="8.0.0" locale="en_US">
+   <Tag name="Simulation" type="Folder">
+      <Tags>
+         <Tag name="Sinusoid" type="AtomicTag">
+            <Property name="valueSource">opc</Property>
+            <Property name="opcItemPath">nsu=http://www.prosysopc.com/OPCUA/SimulationNodes/;i=1004</Property>
+            <Property name="dataType">5</Property>
+            <Property name="opcServer">Prosys Simulation Server</Property>
+         </Tag>
+         <Tag name="Sawtooth" type="AtomicTag">
+            <Property name="valueSource">opc</Property>
+            <Property name="opcItemPath">nsu=http://www.prosysopc.com/OPCUA/SimulationNodes/;i=1003</Property>
+            <Property name="dataType">5</Property>
+            <Property name="opcServer">Prosys Simulation Server</Property>
+         </Tag>
+         <Tag name="Triangle" type="AtomicTag">
+            <Property name="valueSource">opc</Property>
+            <Property name="opcItemPath">nsu=http://www.prosysopc.com/OPCUA/SimulationNodes/;i=1006</Property>
+            <Property name="dataType">5</Property>
+            <Property name="opcServer">Prosys Simulation Server</Property>
+         </Tag>
+         <Tag name="Square" type="AtomicTag">
+            <Property name="valueSource">opc</Property>
+            <Property name="opcItemPath">nsu=http://www.prosysopc.com/OPCUA/SimulationNodes/;i=1005</Property>
+            <Property name="dataType">5</Property>
+            <Property name="opcServer">Prosys Simulation Server</Property>
+         </Tag>
+         <Tag name="Constant" type="AtomicTag">
+            <Property name="valueSource">opc</Property>
+            <Property name="opcItemPath">nsu=http://www.prosysopc.com/OPCUA/SimulationNodes/;i=1007</Property>
+            <Property name="dataType">5</Property>
+            <Property name="opcServer">Prosys Simulation Server</Property>
+         </Tag>
+         <Tag name="Random" type="AtomicTag">
+            <Property name="valueSource">opc</Property>
+            <Property name="opcItemPath">nsu=http://www.prosysopc.com/OPCUA/SimulationNodes/;i=1002</Property>
+            <Property name="dataType">5</Property>
+            <Property name="opcServer">Prosys Simulation Server</Property>
+         </Tag>
+         <Tag name="Counter" type="AtomicTag">
+            <Property name="valueSource">opc</Property>
+            <Property name="opcItemPath">nsu=http://www.prosysopc.com/OPCUA/SimulationNodes/;i=1001</Property>
+            <Property name="dataType">2</Property>
+            <Property name="opcServer">Prosys Simulation Server</Property>
+         </Tag>
+      </Tags>
+   </Tag>
+</Tags>

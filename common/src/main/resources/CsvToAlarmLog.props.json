@@ -1,0 +1,82 @@
+{
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+        "url"
+    ],
+    "properties": {
+        "url": {
+            "type": "string",
+            "description": "URL of the CSV file to convert to alarm logs.",
+            "default": "/path/to/your/file.csv"            
+        },
+        "buttonText": {
+            "type": "string",
+            "description": "Text to display on the button.",
+            "default": "Convert file To Tags/Alarms"
+        },
+        "buttonColor": {
+            "type": "string",
+            "description": "Color of the button.",
+            "format": "color",
+            "default": "#0078D4"
+        },
+        "textColor": {
+            "type": "string",
+            "description": "Color of the button text.",
+            "format": "color",
+            "default": "#FFFFFF"
+        },
+        "fontSize": {
+            "type": "string",
+            "description": "Size of font for the button text, as a valid CSS size",
+            "default": "1rem"
+        },
+        "successMessage": {
+            "type": "string",
+            "description": "Message to display when import is successful.",
+            "default": "CSV imported successfully!"
+        },
+        "errorMessage": {
+            "type": "string",
+            "description": "Message to display when import fails.",
+            "default": "Error importing CSV!"
+        },
+        "warningMessage": {
+            "type": "string",
+            "description": "Message to display when wrong file type is selected.",
+            "default": "Invalid file type selected. Please choose a valid CSV, XML, or JSON file."
+        },
+        "showConfirmation": {
+            "type": "boolean",
+            "description": "Whether to show a confirmation dialog before importing.",
+            "default": true
+        },
+        "confirmationMessage": {
+            "type": "string",
+            "description": "Confirmation message to display before importing.",
+            "default": "Do you want to import Tags or Alarms list file?",
+            "visibleWhen": {
+                "property": "showConfirmation",
+                "equals": true
+            }
+        },
+        "logLevel": {
+            "type": "string",
+            "enum": [
+                "info",
+                "warning",
+                "error",
+                "debug"
+            ],
+            "description": "Logging level for the import process.",
+            "default": "info"
+        },
+        "style": {
+            "$ref": "urn:ignition-schema:schemas/style-properties.schema.json",
+            "default": {
+                "classes": ""
+            }
+        }
+    }
+}

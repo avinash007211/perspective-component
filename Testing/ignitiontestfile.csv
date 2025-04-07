@@ -1,0 +1,13 @@
+﻿Path,Name,Owner,TagType,DataType,Value,Enabled,AccessRights,OPCServer,OPCItemPath
+"ScanClass,DriverName,ScaleMode,RawLow,RawHigh,ScaledLow,ScaledHigh,ClampMode,ScaleFactor,Deadband,DeadbandMode,FormatString,EngUnit,EngLow,EngHigh,EngLimitMode,Tooltip,Documentation,ExpressionType,Expression,OPCWriteBackServer,OPCWriteBackItemPath,SQLBindingDatasource,HistoryEnabled,PrimaryHistoryProvider,HistoricalScanclass,HistoricalDeadband,HistoricalDeadbandMode,InterpolationMode,HistoryMaxAgeMode,HistoryMaxAge,HistoryTimestampSource,UDTParentType,PersistValue,SourceDataType,SourceTagPath,SQLBindingPollRate,Permissions",,,,,,,,,
+"# version=1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,",,,,,,,,,
+",_types_,,6,2,,TRUE,Read_Write,,,Default,,0,0,100,0,10,0,0,1.00E-04,0,""#,##0.##"",,0,100,0,,,0,,,,,FALSE,,Default Historical,0.01,0,3,0,1,0,,FALSE,,,,",,,,,,,,,
+",A Folder,,6,2,,TRUE,Read_Write,,,Default,,0,0,100,0,10,0,0,1.00E-04,0,""#,##0.##"",,0,100,0,,,0,,,,,FALSE,,Default Historical,0.01,0,3,0,1,0,,FALSE,,,,",,,,,,,,,
+"A Folder/,OPC in a folder,,0,2,,TRUE,Read_Write,,,Default,,0,0,100,0,10,0,0,1.00E-04,0,""#,##0.##"",,0,100,0,,,0,,,,,FALSE,,Default Historical,0.01,0,3,0,1,0,,FALSE,,,,",,,,,,,,,
+",Derived Tag,,13,2,100,TRUE,Read_Write,,,Default,,0,0,100,0,10,0,0,1.00E-04,0,""#,##0.##"",,0,100,0,,,0,,,,,FALSE,,Default Historical,0.01,0,3,0,1,0,,FALSE,,[~]Expression Tag,,",,,,,,,,,
+",Expression Tag,,1,2,100,TRUE,Read_Write,,,Default,,0,0,100,0,10,0,0,1.00E-04,0,""#,##0.##"",,0,100,0,,,1,""//This is an expression",,,,,,,,,
+"100"",,,,FALSE,,Default Historical,0.01,0,3,0,1,0,,FALSE,,,,",,,,,,,,,
+",Memory Tag,,1,7,I'm a memory Tag,TRUE,Read_Write,,,Default,,0,0,100,0,10,0,0,1.00E-04,0,""#,##0.##"",,0,100,0,,,0,,,,,FALSE,,Default Historical,0.01,0,3,0,1,0,,FALSE,,,,",,,,,,,,,
+",OPC Tag,,0,2,,TRUE,Read_Write,Ignition OPC-UA Server,[devicename]folder/path,Default,,0,0,100,0,10,0,0,1.00E-04,0,""#,##0.##"",,0,100,0,,,0,,,,,FALSE,,Default Historical,0.01,0,3,0,1,0,,FALSE,,,,",,,,,,,,,
+",Query Tag,,1,2,,TRUE,Read_Write,,,Default,,0,0,100,0,10,0,0,1.00E-04,0,""#,##0.##"",,0,100,0,,,2,""/*Some Query*/",,,,,,,,,
+"SELECT 100"",,,,FALSE,,Default Historical,0.01,0,3,0,1,0,,FALSE,,,,",,,,,,,,,

@@ -1,0 +1,10 @@
+{
+  "devDependencies": {
+    "@types/dom-mediacapture-record": "^1.0.21",
+    "typescript": "^5.8.2",
+    "webpack": "^5.98.0"
+  },
+  "dependencies": {
+    "sass": "^1.86.0"
+  }
+}

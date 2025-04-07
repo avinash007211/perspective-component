@@ -1,0 +1,70 @@
+{
+  "name": "tags",
+  "tagType": "Folder",
+  "tags": [
+    {
+      "valueSource": "opc",
+      "opcItemPath": "nsu=http://www.example.com/OPCUA/Nodes/;i=8266",
+      "dataType": "Folder",
+      "name": "Simulation",
+      "tagType": "AtomicTag",
+      "opcServer": "OPC_Server"
+    },
+    {
+      "valueSource": "opc",
+      "opcItemPath": "nsu=http://www.example.com/OPCUA/Nodes/;i=1105",
+      "dataType": "AtomicTag",
+      "name": "Sinusoid",
+      "tagType": "AtomicTag",
+      "opcServer": "OPC_Server"
+    },
+    {
+      "valueSource": "opc",
+      "opcItemPath": "nsu=http://www.example.com/OPCUA/Nodes/;i=3095",
+      "dataType": "AtomicTag",
+      "name": "Sawtooth",
+      "tagType": "AtomicTag",
+      "opcServer": "OPC_Server"
+    },
+    {
+      "valueSource": "opc",
+      "opcItemPath": "nsu=http://www.example.com/OPCUA/Nodes/;i=7151",
+      "dataType": "AtomicTag",
+      "name": "Triangle",
+      "tagType": "AtomicTag",
+      "opcServer": "OPC_Server"
+    },
+    {
+      "valueSource": "opc",
+      "opcItemPath": "nsu=http://www.example.com/OPCUA/Nodes/;i=2487",
+      "dataType": "AtomicTag",
+      "name": "Square",
+      "tagType": "AtomicTag",
+      "opcServer": "OPC_Server"
+    },
+    {
+      "valueSource": "opc",
+      "opcItemPath": "nsu=http://www.example.com/OPCUA/Nodes/;i=7699",
+      "dataType": "AtomicTag",
+      "name": "Constant",
+      "tagType": "AtomicTag",
+      "opcServer": "OPC_Server"
+    },
+    {
+      "valueSource": "opc",
+      "opcItemPath": "nsu=http://www.example.com/OPCUA/Nodes/;i=5161",
+      "dataType": "AtomicTag",
+      "name": "Random",
+      "tagType": "AtomicTag",
+      "opcServer": "OPC_Server"
+    },
+    {
+      "valueSource": "opc",
+      "opcItemPath": "nsu=http://www.example.com/OPCUA/Nodes/;i=7741",
+      "dataType": "AtomicTag",
+      "name": "Counter",
+      "tagType": "AtomicTag",
+      "opcServer": "OPC_Server"
+    }
+  ]
+}

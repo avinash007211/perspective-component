@@ -1,0 +1,64 @@
+{
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "buttonText": {
+            "type": "string",
+            "description": "Text to display on the record button.",
+            "default": "Start Recording"
+        },
+        "buttonColor": {
+            "type": "string",
+            "description": "Color of the buttons.",
+            "format": "color",
+            "default": "#0078D4"
+        },
+        "stopButtonColor": {
+            "type": "string",
+            "description": "Color of the stop recording button.",
+            "format": "color",
+            "default": "#f44336"
+        },
+        "textColor": {
+            "type": "string",
+            "description": "Color of the button text.",
+            "format": "color",
+            "default": "#FFFFFF"
+        },
+        "fontSize": {
+            "type": "string",
+            "description": "Size of font for the button text, as a valid CSS size",
+            "default": "1rem"
+        },
+        "successMessage": {
+            "type": "string",
+            "description": "Message to display when screen capture is successful.",
+            "default": "Screen capture completed successfully!"
+        },
+        "errorMessage": {
+            "type": "string",
+            "description": "Message to display when screen capture fails.",
+            "default": "Error capturing screen!"
+        },
+        "showConfirmation": {
+            "type": "boolean",
+            "description": "Whether to show a confirmation dialog before capturing.",
+            "default": true
+        },
+        "confirmationMessage": {
+            "type": "string",
+            "description": "Confirmation message to display before capturing.",
+            "default": "Do you want to capture your screen?",
+            "visibleWhen": {
+                "property": "showConfirmation",
+                "equals": true
+            }
+        },
+        "style": {
+            "$ref": "urn:ignition-schema:schemas/style-properties.schema.json",
+            "default": {
+                "classes": ""
+            }
+        }
+    }
+}

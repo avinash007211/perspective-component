@@ -1,0 +1,14 @@
+<Tags MinVersion="8.0.0" locale="de_DE">
+   <Tag name="HelloTag" type="AtomicTag">
+      <Property name="valueSource">memory</Property>
+      <Property name="readOnly">false</Property>
+      <Property name="writePermissions">{&quot;type&quot;:&quot;AnyOf&quot;,&quot;securityLevels&quot;:[]}</Property>
+      <Property name="readPermissions">{&quot;type&quot;:&quot;AnyOf&quot;,&quot;securityLevels&quot;:[]}</Property>
+      <Property name="value">120</Property>
+   </Tag>
+   <Tag name="Tag12" type="AtomicTag">
+      <Property name="valueSource">opc</Property>
+      <Property name="opcItemPath">ns=1;s=[Sample_Device][Controls]/baseRateNode</Property>
+      <Property name="opcServer">Ignition OPC UA Server</Property>
+   </Tag>
+</Tags>
