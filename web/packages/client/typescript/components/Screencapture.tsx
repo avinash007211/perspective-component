@@ -83,7 +83,7 @@ export class ScreenCapture extends Component<ComponentProps<ScreenCaptureProps>,
         this.handleDownload(blob, "screen_recording.webm", "Recording saved successfully!");
       };
 
-      mediaRecorder.start(1000); // Collect data every second
+      mediaRecorder.start(1000);
       this.setState({ 
         recording: true, 
         mediaRecorder,
@@ -109,7 +109,6 @@ export class ScreenCapture extends Component<ComponentProps<ScreenCaptureProps>,
     this.downloadLink.download = filename;
     document.body.appendChild(this.downloadLink);
 
-    // Detect when user actually saves the file
     const handleClick = () => {
       setTimeout(() => {
         this.setState({
@@ -117,14 +116,34 @@ export class ScreenCapture extends Component<ComponentProps<ScreenCaptureProps>,
           message: successMessage,
           recordedChunks: [],
         });
-        this.downloadLink?.removeEventListener('click', handleClick);
+
+        const subject = encodeURIComponent("Screen Capture Submission - Please Review");
+        const body = encodeURIComponent(
+          `Dear Team,
+
+A screen capture (screenshot or screen recording) has been completed and is now available for your review.
+
+File Name: ${filename}
+
+The file has been saved locally. Please find it attached to this email or locate it in the default downloads folder if not yet attached. The capture was performed for documentation, troubleshooting, or quality assurance purposes.
+
+Kindly review the attached media and take any necessary actions as per the standard operating procedure.
+
+If you have any questions or require additional information, feel free to reach out.
+
+Best regards,
+[Your Name / Department]`
+        );
+        const recipient = "abc@example.com";
+        window.open(`mailto:${recipient}?subject=${subject}&body=${body}`, "_blank");
+
+        this.downloadLink?.removeEventListener("click", handleClick);
       }, 100);
     };
 
-    this.downloadLink.addEventListener('click', handleClick);
+    this.downloadLink.addEventListener("click", handleClick);
     this.downloadLink.click();
 
-    // Clean up after 10 seconds
     setTimeout(() => {
       if (this.downloadLink) {
         document.body.removeChild(this.downloadLink);
@@ -166,7 +185,7 @@ export class ScreenCapture extends Component<ComponentProps<ScreenCaptureProps>,
       canvas.width = bitmap.width;
       canvas.height = bitmap.height;
       const ctx = canvas.getContext("2d");
-      
+
       if (ctx) {
         ctx.drawImage(bitmap, 0, 0);
         canvas.toBlob((blob) => {
@@ -214,7 +233,7 @@ export class ScreenCapture extends Component<ComponentProps<ScreenCaptureProps>,
       fontSize = "1rem",
       emit
     } = this.props;
-    
+
     const { recording, isLoading } = this.state;
 
     return (
@@ -232,7 +251,7 @@ export class ScreenCapture extends Component<ComponentProps<ScreenCaptureProps>,
           >
             {isLoading ? 'Processing...' : screenshotButtonText}
           </button>
-          
+
           <button
             className={`screen-capture-button ${recording ? 'recording-btn' : ''}`}
             onClick={recording ? this.stopRecording : this.startRecording}
