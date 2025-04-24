@@ -14,7 +14,8 @@
     "clean": "lerna clean",
     "check": "lerna check"
   },
-    "devDependencies" : {
-        "lerna": "3.22.1"
-    }
+  "devDependencies": {
+    "lerna": "3.22.1",
+    "webpack-obfuscator": "^3.5.1"
+  }
 }

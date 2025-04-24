@@ -1,8 +1,11 @@
 {
   "devDependencies": {
     "@types/dom-mediacapture-record": "^1.0.21",
+    "cross-env": "^7.0.3",
+    "javascript-obfuscator": "^4.1.1",
     "typescript": "^5.8.2",
-    "webpack": "^5.98.0"
+    "webpack": "^5.98.0",
+    "webpack-obfuscator": "^3.5.1"
   },
   "dependencies": {
     "sass": "^1.86.0"

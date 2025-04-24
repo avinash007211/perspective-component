@@ -17,7 +17,7 @@ public class CsvToAlarmLog {
         JsonSchema.parse(RadComponents.class.getResourceAsStream("/CsvToAlarmLog.props.json"));
 
     public static ComponentDescriptor DESCRIPTOR = ComponentDescriptorImpl.ComponentBuilder.newBuilder()
-        .setPaletteCategory(RadComponents.COMPONENT_CATEGORY)
+        .setPaletteCategory(RadComponents.COMPONENT_CATEGORY + "-Buttons")
         .setId(COMPONENT_ID)
         .setModuleId(RadComponents.MODULE_ID)
         .setSchema(SCHEMA) //  this could alternatively be created purely in Java if desired

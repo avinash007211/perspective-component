@@ -1,22 +1,16 @@
 /**
- * Webpack build configuration file.  Uses generic configuration that is appropriate for development.  Depending on
- * the needs of your module, you'll likely want to add appropriate 'production' configuration to this file in order
- * do do things such as minify, postcss, etc.
- *
- * To learn more about webpack, visit https://webpack.js.org/
+ * Webpack build configuration file. Configured for production build to minify and hide source code.
  */
 
 const webpack = require('webpack'),
     path = require('path'),
     fs = require('fs'),
     MiniCssExtractPlugin = require("mini-css-extract-plugin"),
-    AfterBuildPlugin = require('@fiverr/afterbuild-webpack-plugin');
+    AfterBuildPlugin = require('@fiverr/afterbuild-webpack-plugin'),
+    JavaScriptObfuscator = require("webpack-obfuscator");
 
 const LibName = "RadComponents";
 
-// function that copies the result of the webpack from the dist/ folder into the  generated-resources folder which
-// ultimately gets included in a 'web.jar'.  This jar is included in the module's gateway scope, and its contents are
-// accessible as classpath resources just as if they were included in the gateway jar itself.
 function copyToResources() {
     const generatedResourcesDir = path.resolve(__dirname, '../..', 'build/generated-resources/mounted/');
     const jsToCopy = path.resolve(__dirname, "dist/", `${LibName}.js`);
@@ -24,60 +18,52 @@ function copyToResources() {
     const jSResourcePath = path.resolve(generatedResourcesDir, `${LibName}.js`);
     const cssResourcePath = path.resolve(generatedResourcesDir, `${LibName}.css`);
 
+    const toCopy = [
+        { from: jsToCopy, to: jSResourcePath },
+        { from: cssToCopy, to: cssResourcePath }
+    ];
 
-    const toCopy = [{from:jsToCopy, to: jSResourcePath}, {from: cssToCopy, to: cssResourcePath}];
-
-    // if the desired folder doesn't exist, create it
-    if (!fs.existsSync(generatedResourcesDir)){
-        fs.mkdirSync(generatedResourcesDir, {recursive: true})
+    if (!fs.existsSync(generatedResourcesDir)) {
+        fs.mkdirSync(generatedResourcesDir, { recursive: true });
     }
 
-    toCopy.forEach( file => {
-        console.log(`copying ${file} into ${generatedResourcesDir}...`);
-
+    toCopy.forEach(file => {
+        console.log(`Copying ${file.from} to ${file.to}...`);
         try {
             fs.access(file.from, fs.constants.R_OK, (err) => {
                 if (!err) {
                     fs.createReadStream(file.from)
                         .pipe(fs.createWriteStream(file.to));
                 } else {
-                    console.log(`Error when attempting to copy ${file.from} into ${file.to}`)
+                    console.log(`Error when copying ${file.from}: ${err}`);
                 }
             });
         } catch (err) {
             console.error(err);
-            // rethrow to fail build
             throw err;
         }
     });
 }
 
-
 const config = {
-
-    // define our entry point, from which we build our source tree for bundling
+    mode: "production",
     entry: {
-        RadComponents:  path.join(__dirname, "./typescript/rad-client-components.ts")
+        [LibName]: path.join(__dirname, "./typescript/rad-client-components.ts")
     },
-
     output: {
-        library: [LibName],  // name as it will be accessible by on the webpack when linked as a script
+        library: [LibName],
         path: path.join(__dirname, "dist"),
         filename: `${LibName}.js`,
         libraryTarget: "umd",
         umdNamedDefine: true
     },
-
-    // Enable sourcemaps for debugging webpack's output.  Should be changed for production builds.
-    devtool: "source-map",
-
+    devtool: false,
     resolve: {
         extensions: [".jsx", ".js", ".ts", ".tsx", ".d.ts", ".css", ".scss"],
         modules: [
-            path.resolve(__dirname, "../../node_modules")  // look at the local as well as shared node modules when resolving dependencies
+            path.resolve(__dirname, "../../node_modules")
         ]
     },
-
     module: {
         rules: [
             {
@@ -97,31 +83,39 @@ const config = {
                     {
                         loader: 'css-loader',
                         options: {
-                            // tells css-loader not to treat `url('/some/path')` as things that need to resolve at build time
-                            // in other words, the url value is simply passed-through as written in the css/sass
-                            url: false
+                            url: false,
+                            modules: {
+                                mode: 'local',
+                                localIdentName: '[hash:base64:5]',
+                                exportLocalsConvention: 'camelCase'
+                            }
                         }
                     },
                     {
-                        loader: "sass-loader",
+                        loader: "sass-loader"
                     }
                 ]
             }
         ]
     },
     plugins: [
-        new AfterBuildPlugin(function(stats) {
+        new AfterBuildPlugin(function (stats) {
             copyToResources();
         }),
-        // pulls CSS out into a single file instead of dynamically inlining it
         new MiniCssExtractPlugin({
             filename: "[name].css"
-        })
+        }),
+        new JavaScriptObfuscator({
+            rotateUnicodeArray: true,
+            compact: true,
+            controlFlowFlattening: true,
+            stringArray: true,
+            stringArrayEncoding: ['rc4'],
+            stringArrayThreshold: 1,
+            deadCodeInjection: true,
+            deadCodeInjectionThreshold: 0.4
+        }, [`${LibName}.js`]),
     ],
-
-    // IMPORTANT -- this tells the webpack build tooling "don't include these things as part of the webpack bundle".
-    // They are 'provided' 'externally' via perspective/ignition at runtime, and we don't want multiple copies in the
-    // browser.  Any libraries used that are also used in perspective should be excluded.
     externals: {
         "react": "React",
         "react-dom": "ReactDOM",
@@ -142,6 +136,5 @@ const config = {
         },
     },
 };
-
 
 module.exports = () => config;
