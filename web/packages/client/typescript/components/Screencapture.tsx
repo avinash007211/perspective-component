@@ -10,8 +10,10 @@ import {
 import "../../scss/_ScreenCapture.scss";
 import { bind } from "bind-decorator";
 
+// Component type identifier for registration
 export const COMPONENT_TYPE = "rad.display.ScreenCapture";
 
+// Props interface for configurable component properties
 interface ScreenCaptureProps {
   buttonText: string;
   buttonColor: string;
@@ -23,6 +25,7 @@ interface ScreenCaptureProps {
   confirmationMessage: string;
 }
 
+// Component state definition
 interface ScreenCaptureState {
   recording: boolean;
   mediaRecorder: MediaRecorder | null;
@@ -32,12 +35,14 @@ interface ScreenCaptureState {
   message: string;
 }
 
+// Main component class
 export class ScreenCapture extends Component<ComponentProps<ScreenCaptureProps>, ScreenCaptureState> {
-  private stream: MediaStream | null = null;
-  private downloadLink: HTMLAnchorElement | null = null;
+  private stream: MediaStream | null = null; // Media stream reference
+  private downloadLink: HTMLAnchorElement | null = null; // Anchor used for downloading files
 
   constructor(props: ComponentProps<ScreenCaptureProps>) {
     super(props);
+    // Initial state setup
     this.state = {
       recording: false,
       mediaRecorder: null,
@@ -48,8 +53,10 @@ export class ScreenCapture extends Component<ComponentProps<ScreenCaptureProps>,
     };
   }
 
+  // Starts screen recording
   @bind
   private async startRecording() {
+    // Optional user confirmation
     if (this.props.showConfirmation && !window.confirm(this.props.confirmationMessage)) {
       return;
     }
@@ -57,19 +64,20 @@ export class ScreenCapture extends Component<ComponentProps<ScreenCaptureProps>,
     this.setState({ isLoading: true, message: "Preparing recording..." });
 
     try {
+      // Request screen media stream
       const mediaDevices = navigator.mediaDevices as any;
-      this.stream = await mediaDevices.getDisplayMedia({ 
-        video: { displaySurface: "browser" }
-      });
+      this.stream = await mediaDevices.getDisplayMedia({ video: { displaySurface: "browser" } });
 
       if (!this.stream) {
         throw new Error("Failed to get media stream");
       }
 
+      // Initialize MediaRecorder
       const mediaRecorder = new MediaRecorder(this.stream, {
         mimeType: "video/webm;codecs=vp9"
       });
 
+      // Handle data chunks
       mediaRecorder.ondataavailable = (event: BlobEvent) => {
         if (event.data.size > 0) {
           this.setState((prevState) => ({
@@ -78,11 +86,13 @@ export class ScreenCapture extends Component<ComponentProps<ScreenCaptureProps>,
         }
       };
 
+      // Handle stop event
       mediaRecorder.onstop = () => {
         const blob = new Blob(this.state.recordedChunks, { type: "video/webm" });
         this.handleDownload(blob, "screen_recording.webm", "Recording saved successfully!");
       };
 
+      // Start recording
       mediaRecorder.start(1000);
       this.setState({ 
         recording: true, 
@@ -101,6 +111,7 @@ export class ScreenCapture extends Component<ComponentProps<ScreenCaptureProps>,
     }
   }
 
+  // Handles blob download and email prompt
   @bind
   private handleDownload(blob: Blob, filename: string, successMessage: string) {
     const url = URL.createObjectURL(blob);
@@ -109,6 +120,7 @@ export class ScreenCapture extends Component<ComponentProps<ScreenCaptureProps>,
     this.downloadLink.download = filename;
     document.body.appendChild(this.downloadLink);
 
+    // Compose and trigger email with file context
     const handleClick = () => {
       setTimeout(() => {
         this.setState({
@@ -118,8 +130,8 @@ export class ScreenCapture extends Component<ComponentProps<ScreenCaptureProps>,
         });
 
         const subject = encodeURIComponent("Screen Capture Submission - Please Review");
-        const body = encodeURIComponent(
-          `Dear Team,
+        const body = encodeURIComponent(`
+Dear Team,
 
 A screen capture (screenshot or screen recording) has been completed and is now available for your review.
 
@@ -132,8 +144,8 @@ Kindly review the attached media and take any necessary actions as per the stand
 If you have any questions or require additional information, feel free to reach out.
 
 Best regards,
-[Your Name / Department]`
-        );
+[Your Name / Department]
+        `);
         const recipient = "abc@example.com";
         window.open(`mailto:${recipient}?subject=${subject}&body=${body}`, "_blank");
 
@@ -144,6 +156,7 @@ Best regards,
     this.downloadLink.addEventListener("click", handleClick);
     this.downloadLink.click();
 
+    // Cleanup link after use
     setTimeout(() => {
       if (this.downloadLink) {
         document.body.removeChild(this.downloadLink);
@@ -153,6 +166,7 @@ Best regards,
     }, 10000);
   }
 
+  // Stops the recording and cleans up
   @bind
   stopRecording() {
     if (this.state.mediaRecorder) {
@@ -162,6 +176,7 @@ Best regards,
     this.cleanupStream();
   }
 
+  // Captures a still screenshot using ImageCapture API
   @bind
   async takeScreenshot() {
     if (this.props.showConfirmation && !window.confirm(this.props.confirmationMessage)) {
@@ -172,9 +187,7 @@ Best regards,
 
     try {
       const mediaDevices = navigator.mediaDevices as any;
-      const stream = await mediaDevices.getDisplayMedia({ 
-        video: { displaySurface: "browser" }
-      });
+      const stream = await mediaDevices.getDisplayMedia({ video: { displaySurface: "browser" } });
       const track = stream.getVideoTracks()[0];
 
       const imageCapture = new (window as any).ImageCapture(track);
@@ -206,6 +219,7 @@ Best regards,
     }
   }
 
+  // Stops all media tracks and clears stream
   cleanupStream() {
     if (this.stream) {
       this.stream.getTracks().forEach((track) => track.stop());
@@ -213,6 +227,7 @@ Best regards,
     }
   }
 
+  // Ensures cleanup on component unmount
   componentWillUnmount() {
     if (this.state.recording && this.state.mediaRecorder) {
       this.state.mediaRecorder.stop();
@@ -224,6 +239,7 @@ Best regards,
     }
   }
 
+  // Renders the buttons and status message
   render() {
     const { 
       buttonText = "Start Recording",
@@ -276,6 +292,7 @@ Best regards,
   }
 }
 
+// Component metadata for Ignition Perspective Designer
 export class ScreenCaptureMeta implements ComponentMeta {
   getComponentType(): string {
     return COMPONENT_TYPE;
@@ -289,6 +306,7 @@ export class ScreenCaptureMeta implements ComponentMeta {
     return { width: 300, height: 120 };
   }
 
+  // Maps Perspective property tree to component props
   getPropsReducer(tree: PropertyTree): ScreenCaptureProps {
     return {
       buttonText: tree.readString("buttonText", "Start Recording"),

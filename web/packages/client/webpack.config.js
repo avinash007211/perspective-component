@@ -59,7 +59,7 @@ const config = {
     },
     devtool: false,
     resolve: {
-        extensions: [".jsx", ".js", ".ts", ".tsx", ".d.ts", ".css", ".scss"],
+        extensions: [".jsx", ".js", ".ts", ".tsx", ".d.ts", ".css", ".scss", ".svg"],
         modules: [
             path.resolve(__dirname, "../../node_modules")
         ]
@@ -93,6 +93,28 @@ const config = {
                     },
                     {
                         loader: "sass-loader"
+                    }
+                ]
+            },
+            {
+                test: /\.svg$/,
+                issuer: /\.[jt]sx?$/,
+                use: [
+                    {
+                        loader: '@svgr/webpack',
+                        options: {
+                            svgo: true,
+                            titleProp: true,
+                            ref: true
+                        }
+                    },
+                    {
+                        loader: 'file-loader',
+                        options: {
+                            name: '[name].[hash].[ext]',
+                            outputPath: 'assets/',
+                            publicPath: 'assets/'
+                        }
                     }
                 ]
             }

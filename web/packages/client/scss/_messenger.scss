@@ -1,26 +1,15 @@
-.messenger-component {
+.messenger-component-wrapper {
+  width: 100%;
+  height: 100%;
+  position: relative;
   display: flex;
-  flex-flow: row wrap;
-  justify-content: space-around;
+  align-items: center;
+  justify-content: center;
 
-  .counter {
-    text-align: center;
-  }
-  .message {
-    text-align: center;
-    color: slategray;
+  svg {
     width: 100%;
-  }
-
-  > * {
-    flex: 1 100%;
-  }
-
-  .messenger-button {
-    width: 100%;
-    background-color: blue;
-    color: aliceblue;
-    height: 2rem;
-    margin: auto;
+    height: 100%;
+    display: block;
+    pointer-events: auto;
   }
 }

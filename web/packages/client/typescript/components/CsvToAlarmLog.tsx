@@ -1,3 +1,4 @@
+// React and Perspective imports
 import * as React from "react";
 import {
   Component,
@@ -13,6 +14,7 @@ import { bind } from 'bind-decorator';
 
 export const COMPONENT_TYPE = "rad.display.CsvToAlarmLog";
 
+// Component property interface defined for Perspective Designer bindings
 interface CsvToAlarmLogProps {
   buttonText: string;
   buttonColor: string;
@@ -25,6 +27,7 @@ interface CsvToAlarmLogProps {
   confirmationMessage: string;
 }
 
+// Component state interface
 interface CsvToAlarmLogState {
   isLoading: boolean;
   isSuccess: boolean | null;
@@ -33,9 +36,12 @@ interface CsvToAlarmLogState {
   fileName: string | null;
 }
 
+// Logger for developer debugging
 const logger = makeLogger("radcomponents.CsvToAlarmLog");
 
+// Main component class
 export class CsvToAlarmLog extends Component<ComponentProps<CsvToAlarmLogProps>, CsvToAlarmLogState> {
+  // Initial state
   state: CsvToAlarmLogState = {
     isLoading: false,
     isSuccess: null,
@@ -44,6 +50,7 @@ export class CsvToAlarmLog extends Component<ComponentProps<CsvToAlarmLogProps>,
     fileName: null
   };
 
+  // Handler for file input change
   @bind
   private handleFileSelect(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
@@ -52,6 +59,7 @@ export class CsvToAlarmLog extends Component<ComponentProps<CsvToAlarmLogProps>,
     const allowedExtensions = ["csv", "xml", "json"];
     const fileExtension = file.name.split(".").pop()?.toLowerCase();
     
+    // Validate file extension
     if (!fileExtension || !allowedExtensions.includes(fileExtension)) {
       this.setState({ 
         isSuccess: false, 
@@ -59,25 +67,29 @@ export class CsvToAlarmLog extends Component<ComponentProps<CsvToAlarmLogProps>,
       });
       return;
     }
-    
+
+    // Remove extension from filename and trigger processing
     this.setState({ fileName: file.name.replace(/\.[^/.]+$/, "") });
     this.processFile(file, fileExtension);
   }
 
+  // Reads file and triggers parsing logic based on extension
   private processFile(file: File, extension: string) {
     this.setState({ 
       isLoading: true, 
       message: "Processing file...",
       fileName: file.name.replace(/\.[^/.]+$/, "")
     });
-    
+
     const reader = new FileReader();
-    
+
+    // File read success callback
     reader.onload = (e) => {
       try {
         const content = e.target?.result as string;
         let jsonData;
-        
+
+        // Convert based on file type
         switch (extension) {
           case "csv":
             jsonData = this.convertCsvToJson(content);
@@ -91,16 +103,17 @@ export class CsvToAlarmLog extends Component<ComponentProps<CsvToAlarmLogProps>,
           default:
             throw new Error("Unsupported file type");
         }
-        
+
+        // Update state with parsed data
         this.setState({
           isLoading: false,
           isSuccess: true,
           message: this.props.successMessage,
           convertedData: JSON.stringify(jsonData, null, 2)
         });
-        
+
         logger.info("File processed successfully");
-        
+
       } catch (error) {
         this.setState({
           isLoading: false,
@@ -110,7 +123,8 @@ export class CsvToAlarmLog extends Component<ComponentProps<CsvToAlarmLogProps>,
         logger.error("Error processing file");
       }
     };
-    
+
+    // Handle file read error
     reader.onerror = () => {
       this.setState({ 
         isLoading: false, 
@@ -119,20 +133,22 @@ export class CsvToAlarmLog extends Component<ComponentProps<CsvToAlarmLogProps>,
       });
       logger.error("Error reading file");
     };
-    
+
     reader.readAsText(file);
   }
 
+  // Converts XML string to structured JSON object
   private convertXmlToJson(xmlText: string): any {
     const parser = new DOMParser();
     const xmlDoc = parser.parseFromString(xmlText, "text/xml");
-    
+
     const tags = Array.from(xmlDoc.getElementsByTagName("Tag")).map(tagNode => {
       const tag: any = {
         name: tagNode.getAttribute("name"),
         tagType: tagNode.getAttribute("type") || "AtomicTag"
       };
-      
+
+      // Parse tag children: Properties and Alarms
       Array.from(tagNode.children).forEach(child => {
         if (child.nodeName === "Property") {
           const propName = child.getAttribute("name");
@@ -156,6 +172,8 @@ export class CsvToAlarmLog extends Component<ComponentProps<CsvToAlarmLogProps>,
                 }
               }
             });
+
+            // Normalize priority
             if (alarm.priority === "3" || alarm.priority === 3) {
               alarm.priority = "High";
             }
@@ -163,17 +181,19 @@ export class CsvToAlarmLog extends Component<ComponentProps<CsvToAlarmLogProps>,
           });
         }
       });
-      
+
+      // Default value source fallback
       if (!tag.valueSource) {
         tag.valueSource = tag.opcItemPath ? "opc" : "memory";
       }
-      
+
       return tag;
     });
-    
+
     return { tags };
   }
 
+  // Button click handler for triggering file input (with optional confirmation)
   @bind
   private handleButtonClick() {
     if (this.props.showConfirmation && !window.confirm(this.props.confirmationMessage)) {
@@ -182,37 +202,37 @@ export class CsvToAlarmLog extends Component<ComponentProps<CsvToAlarmLogProps>,
     document.getElementById("csv-file-input")?.click();
   }
 
+  // Converts CSV string to structured JSON
   private convertCsvToJson(csvText: string): any {
     const lines = csvText.split('\n').filter(line => line.trim() !== '');
     const headers = lines[0].split(',').map(h => h.trim());
-    
+
     const tags = lines.slice(1).map(line => {
       const values = line.split(',');
       const tag: any = {};
       const alarms: any[] = [];
-      
+
+      // Map headers to tag properties
       headers.forEach((header, index) => {
         if (values[index] && values[index].trim() !== '') {
           const value = values[index].trim();
           const cleanHeader = header.replace(/^tags\//, '');
-          
+
           // Handle alarm properties
           if (cleanHeader.startsWith('alarms/0/')) {
             const alarmProp = cleanHeader.replace('alarms/0/', '');
-            if (alarms.length === 0) {
-              alarms.push({});
-            }
+            if (alarms.length === 0) alarms.push({});
             try {
-              alarms[0][alarmProp] = value === 'TRUE' ? true : 
-                                    value === 'FALSE' ? false : 
-                                    JSON.parse(value);
+              alarms[0][alarmProp] = value === 'TRUE' ? true :
+                                     value === 'FALSE' ? false :
+                                     JSON.parse(value);
             } catch {
               alarms[0][alarmProp] = value;
             }
             return;
           }
-          
-          // Handle nested permissions structures
+
+          // Handle nested permission structures
           if (cleanHeader.startsWith('writePermissions/') || cleanHeader.startsWith('readPermissions/')) {
             const [baseProp, nestedProp] = cleanHeader.split('/');
             if (!tag[baseProp]) {
@@ -223,46 +243,42 @@ export class CsvToAlarmLog extends Component<ComponentProps<CsvToAlarmLogProps>,
             }
             return;
           }
-          
-          // Handle regular properties
+
+          // Handle all other properties
           try {
-            tag[cleanHeader] = value === 'TRUE' ? true : 
-                              value === 'FALSE' ? false : 
+            tag[cleanHeader] = value === 'TRUE' ? true :
+                              value === 'FALSE' ? false :
                               JSON.parse(value);
           } catch {
             tag[cleanHeader] = value;
           }
         }
       });
-      
-      // Add alarms if any exist
+
+      // Attach alarms if present
       if (alarms.length > 0) {
         tag.alarms = alarms;
-        // Ensure required alarm fields
-        if (!tag.alarms[0].displayPath) {
-          tag.alarms[0].displayPath = "";
-        }
-        if (tag.alarms[0].priority === '3') {
-          tag.alarms[0].priority = "High";
-        }
+        if (!tag.alarms[0].displayPath) tag.alarms[0].displayPath = "";
+        if (tag.alarms[0].priority === '3') tag.alarms[0].priority = "High";
       }
-      
-      // Ensure required fields exist
+
+      // Defaults for missing tag fields
       if (!tag.tagType) tag.tagType = "AtomicTag";
       if (!tag.valueSource) tag.valueSource = tag.opcItemPath ? "opc" : "memory";
-      
+
       return tag;
     });
-    
+
     return {
       tags: tags.filter(tag => tag.name)
     };
-  }   
+  }
 
+  // Trigger download of converted JSON
   @bind
   private handleDownload() {
     if (!this.state.convertedData) return;
-    
+
     const blob = new Blob([this.state.convertedData], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -274,28 +290,30 @@ export class CsvToAlarmLog extends Component<ComponentProps<CsvToAlarmLogProps>,
     URL.revokeObjectURL(url);
   }
 
+  // Main render method
   render() {
     const { 
       props: { buttonText, buttonColor, textColor, fontSize },
       emit
     } = this.props;
-    
+
     const { isLoading, isSuccess, message, convertedData } = this.state;
 
     const buttonStyle = {
       backgroundColor: buttonColor,
       color: textColor,
       fontSize: fontSize,
-      marginBottom: '12px' // Added margin between buttons
+      marginBottom: '12px'
     };
 
     const downloadButtonStyle = {
       ...buttonStyle,
-      marginTop: '12px' // Added top margin for download button
+      marginTop: '12px'
     };
 
     return (
       <div {...emit({ classes: ['csv-to-alarm-log-component'] })}>
+        {/* Hidden file input */}
         <input
           id="csv-file-input"
           type="file"
@@ -303,7 +321,8 @@ export class CsvToAlarmLog extends Component<ComponentProps<CsvToAlarmLogProps>,
           style={{ display: "none" }}
           onChange={this.handleFileSelect}
         />
-        
+
+        {/* File select button */}
         <div className="button-container">
           <button
             className={`csv-to-alarm-button ${isLoading ? 'loading' : ''}`}
@@ -315,12 +334,14 @@ export class CsvToAlarmLog extends Component<ComponentProps<CsvToAlarmLogProps>,
           </button>
         </div>
 
+        {/* Message display */}
         {message && (
           <div className={`message ${isSuccess ? 'success' : 'error'}`}>
             {message}
           </div>
         )}
 
+        {/* Converted JSON preview and download */}
         {convertedData && isSuccess && (
           <div className="conversion-result">
             <div className="download-button-container">
@@ -342,6 +363,7 @@ export class CsvToAlarmLog extends Component<ComponentProps<CsvToAlarmLogProps>,
   }
 }
 
+// Metadata class for Perspective integration
 export class CsvToAlarmLogMeta implements ComponentMeta {
   getComponentType(): string {
     return COMPONENT_TYPE;
@@ -355,6 +377,7 @@ export class CsvToAlarmLogMeta implements ComponentMeta {
     return { width: 200, height: 60 };
   }
 
+  // Bind component props to Perspective properties
   getPropsReducer(tree: PropertyTree): CsvToAlarmLogProps {
     return {
       buttonText: tree.readString("buttonText", "Select File"),
