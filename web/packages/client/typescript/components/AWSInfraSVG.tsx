@@ -64,7 +64,9 @@ export class AWSInfraSVGComponent extends Component<
   }
 
   handleRoomClick(roomId: string): void {
-    this.props.store.delegate?.handleEvent("aws-server-selected", { selectedRoom: roomId });
+    const currentSelection = this.props.delegate?.selectedRoom;
+    const newSelection = currentSelection === roomId ? "" : roomId;
+    this.props.store.delegate?.handleEvent("aws-server-selected", { selectedRoom: newSelection });
   }
 
   render() {
@@ -75,17 +77,17 @@ export class AWSInfraSVGComponent extends Component<
         ref={(el) => (this.rootElementRef = el!)}
         className="aws-infra-svg-component-wrapper"
         style={{ width: "100%", height: "100%", position: "relative" }}
-        {...this.props.emit()} // This enables selection in the designer
+        {...this.props.emit()}
       >
         <svg
           viewBox="0 0 821 230"
           width="100%"
           height="100%"
           preserveAspectRatio="xMidYMid meet"
-          style={{ display: "block" }} // Ensure SVG takes full container space
+          style={{ display: "block" }}
         >
           {/* Background */}
-          <rect x="0" y="0" width="821" height="230" fill="#f5f5f5" rx="8" ry="8" />
+          <rect x="0" y="0" width="821" height="230" fill="#f5f5f5" rx="8" ry="8" className="background-rect" />
 
           {/* Server Boxes */}
           {SERVER_ROOMS.map((room) => {
@@ -107,22 +109,26 @@ export class AWSInfraSVGComponent extends Component<
                   className={isSelected ? "selected-room-box" : "room-box"}
                 />
 
-                <text
-                  x={room.x}
-                  y={room.y}
-                  textAnchor="middle"
-                  dominantBaseline="middle"
-                  fontWeight="bold"
-                  fontSize="14"
-                  fill={isSelected ? "white" : "#333"}
-                >
-                  {room.id}
-                </text>
+                {/* Only show ID text when selected */}
+                {isSelected && (
+                  <text
+                    x={room.x}
+                    y={room.y}
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                    fontWeight="bold"
+                    fontSize="14"
+                    fill="white"
+                    className="server-id-text"
+                  >
+                    {room.id}
+                  </text>
+                )}
               </React.Fragment>
             );
           })}
 
-          {/* Labels above each box */}
+          {/* Labels above each box (always visible) */}
           {SERVER_ROOMS.map((room) => (
             <text
               key={`label-${room.id}`}
@@ -131,6 +137,7 @@ export class AWSInfraSVGComponent extends Component<
               textAnchor="middle"
               fontSize="12"
               fill="#333"
+              className="room-label"
             >
               {room.id.replace("A1.", "Server-")}
             </text>
@@ -145,6 +152,7 @@ export class AWSInfraSVGComponent extends Component<
               fontSize="14"
               fill="#333"
               fontWeight="bold"
+              className="selected-room-indicator"
             >
               Selected Room: {selectedRoom}
             </text>
