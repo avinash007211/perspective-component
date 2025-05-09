@@ -5,10 +5,12 @@ import { MessengerComponent, MessengerComponentMeta } from './components/Messeng
 import { TagCounter, TagCounterMeta } from './components/TagCounter';
 import { CsvToAlarmLog, CsvToAlarmLogMeta } from './components/CsvToAlarmLog';
 import { ScreenCapture, ScreenCaptureMeta} from './components/Screencapture';
+import { AWSInfraSVGComponent, AWSInfraSVGComponentMeta} from './components/AWSInfraSVG';
+
 
 
 // export so the components are referencable, e.g. `RadComponents['Image']
-export {Image, ImageTest, MessengerComponent, TagCounter, CsvToAlarmLog, ScreenCapture};
+export {Image, ImageTest, MessengerComponent, TagCounter, CsvToAlarmLog, ScreenCapture,AWSInfraSVGComponent};
 
 import '../scss/main';
 
@@ -19,7 +21,8 @@ const components: Array<ComponentMeta> = [
     new MessengerComponentMeta(),
     new TagCounterMeta(),
     new CsvToAlarmLogMeta(),
-    new ScreenCaptureMeta()
+    new ScreenCaptureMeta(),
+    new AWSInfraSVGComponentMeta()
 ];
 
 // iterate through our components, registering each one with the registry.  Don't forget to register on the Java side too!

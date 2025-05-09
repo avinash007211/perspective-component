@@ -1,0 +1,55 @@
+{
+  "type": "object",
+  "properties": {
+    "roomConfig": {
+      "type": "array",
+      "title": "Room Configuration",
+      "description": "Configuration for each room with tag bindings and color thresholds.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The SVG ID of the room/area"
+          },
+          "tagPath": {
+            "type": "string",
+            "description": "The tag path to monitor for this room"
+          },
+          "colorRange": {
+            "type": "array",
+            "description": "Value-based color mapping",
+            "items": {
+              "type": "object",
+              "properties": {
+                "min": { "type": "number" },
+                "max": { "type": "number" },
+                "color": { "type": "string", "format": "color" }
+              },
+              "required": ["min", "max", "color"]
+            }
+          }
+        },
+        "required": ["id", "tagPath"]
+      }
+    },
+    "popupEnabled": {
+      "type": "boolean",
+      "title": "Enable Popup",
+      "description": "If true, clicking a room shows a popup with metadata.",
+      "default": true
+    },
+    "meta": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "title": "Component Name"
+        }
+      }
+    },
+    "position": {
+      "$ref": "ia.display.position"
+    }
+  }
+}

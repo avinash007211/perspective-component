@@ -3,6 +3,7 @@ package org.fakester.gateway;
 import java.util.Optional;
 
 import org.fakester.common.RadComponents;
+import org.fakester.common.component.display.AWSInfraSVG;
 import org.fakester.common.component.display.CsvToAlarmLog;
 import org.fakester.common.component.display.Image;
 import org.fakester.common.component.display.ImageTest;
@@ -53,6 +54,7 @@ public class RadGatewayHook extends AbstractGatewayModuleHook {
             this.componentRegistry.registerComponent(TagCounter.DESCRIPTOR);
             this.componentRegistry.registerComponent(Messenger.DESCRIPTOR);
             this.componentRegistry.registerComponent(ScreenCapture.DESCRIPTOR);
+            this.componentRegistry.registerComponent(AWSInfraSVG.DESCRIPTOR);
 
 
         } else {
@@ -78,6 +80,7 @@ public class RadGatewayHook extends AbstractGatewayModuleHook {
             this.componentRegistry.removeComponent(TagCounter.COMPONENT_ID);
             this.componentRegistry.removeComponent(Messenger.COMPONENT_ID);
             this.componentRegistry.removeComponent(ScreenCapture.COMPONENT_ID);
+            this.componentRegistry.removeComponent(AWSInfraSVG.COMPONENT_ID);
 
         } else {
             log.warn("Component registry was null, could not unregister Rad Components.");

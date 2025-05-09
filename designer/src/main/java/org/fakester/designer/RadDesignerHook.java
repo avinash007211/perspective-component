@@ -1,5 +1,6 @@
 package org.fakester.designer;
 
+import org.fakester.common.component.display.AWSInfraSVG;
 import org.fakester.common.component.display.CsvToAlarmLog;
 import org.fakester.common.component.display.Image;
 import org.fakester.common.component.display.ImageTest;
@@ -58,6 +59,7 @@ public class RadDesignerHook extends AbstractDesignerModuleHook {
         registry.registerComponent(TagCounter.DESCRIPTOR);
         registry.registerComponent(Messenger.DESCRIPTOR);
         registry.registerComponent(ScreenCapture.DESCRIPTOR);
+        registry.registerComponent(AWSInfraSVG.DESCRIPTOR);
 
         // register design delegates to get the special config UI when a component type is selected in the designer
         delegateRegistry.register(TagCounter.COMPONENT_ID, new TagCountDesignDelegate());
@@ -76,6 +78,7 @@ public class RadDesignerHook extends AbstractDesignerModuleHook {
         registry.removeComponent(TagCounter.COMPONENT_ID);
         registry.removeComponent(Messenger.COMPONENT_ID);
         registry.removeComponent(ScreenCapture.COMPONENT_ID);
+        registry.removeComponent(AWSInfraSVG.COMPONENT_ID);
 
         delegateRegistry.remove(TagCounter.COMPONENT_ID);
     }
