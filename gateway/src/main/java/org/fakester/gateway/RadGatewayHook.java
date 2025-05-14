@@ -12,6 +12,8 @@ import org.fakester.common.component.display.ScreenCapture;
 import org.fakester.common.component.display.TagCounter;
 import org.fakester.gateway.delegate.MessageComponentModelDelegate;
 import org.fakester.gateway.endpoint.DataEndpoints;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.inductiveautomation.ignition.common.licensing.LicenseState;
 import com.inductiveautomation.ignition.common.util.LoggerEx;
@@ -25,16 +27,21 @@ import com.inductiveautomation.perspective.gateway.api.PerspectiveContext;
 public class RadGatewayHook extends AbstractGatewayModuleHook {
 
     private static final LoggerEx log = LoggerEx.newBuilder().build("rad.gateway.RadGatewayHook");
+    private static final Logger logger = LoggerFactory.getLogger(JythonExecutor.class);
 
     private GatewayContext gatewayContext;
     private PerspectiveContext perspectiveContext;
     private ComponentRegistry componentRegistry;
     private ComponentModelDelegateRegistry modelDelegateRegistry;
+    private JythonExecutor jythonExecutor;
 
     @Override
     public void setup(GatewayContext context) {
         this.gatewayContext = context;
         log.info("Setting up RadComponents module.");
+        logger.info("adding jython class");
+        jythonExecutor = new JythonExecutor(context);
+        logger.info("after jython class addition");
     }
 
     @Override
@@ -45,6 +52,7 @@ public class RadGatewayHook extends AbstractGatewayModuleHook {
         this.componentRegistry = this.perspectiveContext.getComponentRegistry();
         this.modelDelegateRegistry = this.perspectiveContext.getComponentModelDelegateRegistry();
 
+        ReadTag();
 
         if (this.componentRegistry != null) {
             log.info("Registering Rad components.");
@@ -55,7 +63,7 @@ public class RadGatewayHook extends AbstractGatewayModuleHook {
             this.componentRegistry.registerComponent(Messenger.DESCRIPTOR);
             this.componentRegistry.registerComponent(ScreenCapture.DESCRIPTOR);
             this.componentRegistry.registerComponent(AWSInfraSVG.DESCRIPTOR);
-
+            
 
         } else {
             log.error("Reference to component registry not found, Rad Components will fail to function!");
@@ -68,6 +76,13 @@ public class RadGatewayHook extends AbstractGatewayModuleHook {
             log.error("ModelDelegateRegistry was not found!");
         }
 
+    }
+
+    private void ReadTag() {
+        logger.info("creating value");
+        // TODO Auto-generated method stub
+        jythonExecutor.readTagValueX("[default]Simulation/Counter");
+        logger.info("creatEd value");
     }
 
     @Override
