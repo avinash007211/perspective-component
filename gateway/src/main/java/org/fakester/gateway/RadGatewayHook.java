@@ -82,6 +82,7 @@ public class RadGatewayHook extends AbstractGatewayModuleHook {
         logger.info("creating value");
         // TODO Auto-generated method stub
         jythonExecutor.readTagValueX("[default]Simulation/Counter");
+        jythonExecutor.readTagValueX("[default]Simulation/Random");
         logger.info("creatEd value");
     }
 
