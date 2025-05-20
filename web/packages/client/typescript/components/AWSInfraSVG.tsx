@@ -16,36 +16,110 @@ const logger = makeLogger("awsinfra.AWSInfraSVG");
 export const COMPONENT_TYPE = "rad.display.AWSInfraSVG";
 
 export const SERVER_ROOMS = [
-  { id: "A1.1", x: 60, y: 100, width: 200, height: 120 },
-  { id: "A1.2", x: 200, y: 100, width: 200, height: 120 },
-  { id: "A1.3", x: 340, y: 100, width: 200, height: 120 },
-  { id: "A1.4", x: 480, y: 100, width: 200, height: 120 },
-  { id: "A1.5", x: 620, y: 100, width: 200, height: 120 },
-  { id: "A1.6", x: 760, y: 100, width: 200, height: 120 }
+  { id: "A1.1", x: 60, y: 100, width: 200, height: 120, tagPath : "[default]Simulation/Counter" },
+  { id: "A1.2", x: 200, y: 100, width: 200, height: 120, tagPath : "[default]Simulation/Random" },
+  { id: "A1.3", x: 340, y: 100, width: 200, height: 120,  tagPath:"" },
+  { id: "A1.4", x: 480, y: 100, width: 200, height: 120, tagPath:"" },
+  { id: "A1.5", x: 620, y: 100, width: 200, height: 120, tagPath:"" },
+  { id: "A1.6", x: 760, y: 100, width: 200, height: 120, tagPath:"" }
 ];
 
+enum MessageEvents {
+    AWS_REQUEST_EVENT = "aws-component-message-send-event",
+    AWS_RESPONSE_EVENT = "aws-component-message-receive-event"
+}
+
 interface AWSInfraDelegateState {
-  selectedRoom: string;
+  selectedRoom: string,
+  randomTagValue : number,
+  counterTagValue : number;
 }
 
 export class AWSInfraDelegate extends ComponentStoreDelegate {
   private selectedRoom: string = "";
+  private randomTagValue : number = 0;
+  private counterTagValue : number = 0;
+
+
 
   constructor(componentStore: AbstractUIElementStore) {
     super(componentStore);
   }
 
   mapStateToProps(): AWSInfraDelegateState {
-    return { selectedRoom: this.selectedRoom };
+    return { selectedRoom: this.selectedRoom, randomTagValue : this.randomTagValue, counterTagValue : this.counterTagValue };
   }
+
+  public fireDelegateEvent(eventName: string, eventObject: JsObject): void {
+    // log messages left intentionally
+    logger.info(() => `Firing ${eventName} event with message body ${JSON.stringify(eventObject, null, 2)}`);
+    
+    // Inherited from the ComponentStoreDelegate abstract class.
+    this.fireEvent(eventName, eventObject);
+    
+    // Set messagePending to true since an event has been sent to the Gateway.
+    // Will be set to false when a response event is received from the Gateway.
+    // Notify listeners of changes to message pending. This will update the props 
+    // (this.props.delegate) being passed to the paired component (MessengerComponent).
+    this.notify();
+  }
+
+  public fireGatewayMessageWithTwoParameters(randomTagPathSend : string): void {
+          logger.info(() => `Firing gateway with two parameters : ${randomTagPathSend}`);
+          this.fireDelegateEvent(MessageEvents.AWS_RESPONSE_EVENT,  {randomTagPath: randomTagPathSend} );
+  }
+
 
   handleEvent(eventName: string, eventObject: JsObject): void {
     logger.info(() => `Received '${eventName}' event!`);
     if (eventName === "aws-server-selected") {
       this.selectedRoom = eventObject.selectedRoom;
-      this.notify();
+      this.notify();      
     }
-  }
+
+    logger.info(() => `Response in Typescript is invoked`);
+    const {
+            AWS_REQUEST_EVENT
+        } = MessageEvents;
+
+        switch (eventName) {
+            case AWS_REQUEST_EVENT:
+                logger.info(() => `Reached the response event`);
+                this.handleComponentResponseEvent(eventObject);
+                logger.info(() => `Completed the response event`);
+                break;
+            default:
+                logger.warn(() => `No delegate event handler found for event: ${eventName} in MessageComponentGatewayDelegate`);
+        }
+}
+
+// [28:deafult/counter]
+
+handleComponentResponseEvent(eventObject: JsObject): void {
+        logger.info(() => `Callback handling message with contents: ${JSON.stringify(eventObject)}`);
+        logger.info(() => `User button click Response: ${eventObject}`);
+
+        const value = Number(eventObject.tagValue.match(/\[(\d+),/)[1]);
+        
+        logger.info(() => `tagValue is : ${value}`);
+
+        if (!isNaN(value) ) {
+            logger.info(() => `User button click Response`);
+            
+                // The count sent to the Gateway side component delegate where it is 
+                // incremented by one and then returned in this response event.
+                this.counterTagValue = value;
+                logger.info(() => `Random Tag Value is : ${this.counterTagValue}`);
+                // A response event has been received.  Message is no longer pending. Reset state to false.
+                // Notify listeners of changes to internal state. This will update the props 
+                // (this.props.delegate) being passed to the paired component (MessengerComponent).
+                this.notify();
+        } else if (eventObject && eventObject.error) {
+            logger.error(() => `Error MessageDelegate Response: ${eventObject.error}`);
+        } else {
+            logger.error(() => `Detected no payload in response!`); 
+        }
+    }
 }
 
 export class AWSInfraSVGComponent extends Component<
@@ -57,10 +131,22 @@ export class AWSInfraSVGComponent extends Component<
   constructor(props: ComponentProps<{ selectedRoom: string }>) {
     super(props);
     this.handleRoomClick = this.handleRoomClick.bind(this);
+    this.state = {
+            randomTagPath: '',
+            counterTagPath: ''
+      };
   }
 
   componentDidMount() {
     this.rootElementRef = this.props.store.element;
+  }
+
+  fireUpdateToGatewayWithTwoParameters(randomTagPath : string): void {
+        if (randomTagPath != "")
+        {
+          logger.info(() => "Firing message to the Gateway with two Parameters!");
+          (this.props.store.delegate! as AWSInfraDelegate).fireGatewayMessageWithTwoParameters(randomTagPath);
+        }
   }
 
   handleRoomClick(roomId: string): void {
@@ -104,7 +190,7 @@ export class AWSInfraSVGComponent extends Component<
                   fill={isSelected ? "#00b300" : "white"}
                   stroke={isSelected ? "black" : "#999"}
                   strokeWidth={isSelected ? 2 : 1}
-                  onClick={() => this.handleRoomClick(room.id)}
+                  onClick={() => this.fireUpdateToGatewayWithTwoParameters(room.tagPath)}
                   transform={`rotate(-90 ${room.x} ${room.y})`}
                   className={isSelected ? "selected-room-box" : "room-box"}
                 />

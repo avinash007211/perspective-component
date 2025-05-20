@@ -10,6 +10,7 @@ import org.fakester.common.component.display.ImageTest;
 import org.fakester.common.component.display.Messenger;
 import org.fakester.common.component.display.ScreenCapture;
 import org.fakester.common.component.display.TagCounter;
+import org.fakester.gateway.delegate.AWSInfraDelegate;
 import org.fakester.gateway.delegate.MessageComponentModelDelegate;
 import org.fakester.gateway.endpoint.DataEndpoints;
 import org.slf4j.Logger;
@@ -33,7 +34,8 @@ public class RadGatewayHook extends AbstractGatewayModuleHook {
     private PerspectiveContext perspectiveContext;
     private ComponentRegistry componentRegistry;
     private ComponentModelDelegateRegistry modelDelegateRegistry;
-    private JythonExecutor jythonExecutor;
+    private ComponentModelDelegateRegistry awsDelegateRegistry;
+    public static JythonExecutor jythonExecutor;
 
     @Override
     public void setup(GatewayContext context) {
@@ -51,6 +53,7 @@ public class RadGatewayHook extends AbstractGatewayModuleHook {
         this.perspectiveContext = PerspectiveContext.get(this.gatewayContext);
         this.componentRegistry = this.perspectiveContext.getComponentRegistry();
         this.modelDelegateRegistry = this.perspectiveContext.getComponentModelDelegateRegistry();
+        this.awsDelegateRegistry = this.perspectiveContext.getComponentModelDelegateRegistry();
 
         ReadTag();
 
@@ -76,6 +79,12 @@ public class RadGatewayHook extends AbstractGatewayModuleHook {
             log.error("ModelDelegateRegistry was not found!");
         }
 
+        if (this.awsDelegateRegistry != null) {
+            log.info("Registering aws model delegates.");
+            this.awsDelegateRegistry.register(AWSInfraSVG.COMPONENT_ID, AWSInfraDelegate::new);
+        } else {
+            log.error("ModelDelegateRegistry was not found!");
+        }
     }
 
     private void ReadTag() {
@@ -104,6 +113,11 @@ public class RadGatewayHook extends AbstractGatewayModuleHook {
         if (this.modelDelegateRegistry != null ) {
             this.modelDelegateRegistry.remove(Messenger.COMPONENT_ID);
         }
+
+        if (this.awsDelegateRegistry != null){
+            this.modelDelegateRegistry.remove(AWSInfraSVG.COMPONENT_ID);
+        }
+
 
     }
 

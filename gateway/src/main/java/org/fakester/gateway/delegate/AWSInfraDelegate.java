@@ -22,7 +22,7 @@ import org.fakester.gateway.*;
 /**
  * Model Delegate for the Messenger component.
  */
-public class MessageComponentModelDelegate extends ComponentModelDelegate {
+public class AWSInfraDelegate extends ComponentModelDelegate {
     public static final String INCOMING_EVENT_NAME = "messenger-component-message-event";
     public static final String OUTBOUND_EVENT_NAME = "messenger-component-message-response-event";
     
@@ -31,7 +31,7 @@ public class MessageComponentModelDelegate extends ComponentModelDelegate {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    public MessageComponentModelDelegate(Component component) {
+    public AWSInfraDelegate(Component component) {
         super(component);
     }
 
@@ -81,28 +81,6 @@ public class MessageComponentModelDelegate extends ComponentModelDelegate {
     @Override
     public void handleEvent(EventFiredMsg message) {
         log.infof("Received EventFiredMessage of type: %s", message.getEventName());
-
-        // filter out the message we're interested in
-        if (INCOMING_EVENT_NAME.equals(message.getEventName())) {
-            JsonObject payload = message.getEvent();
-            JsonObject responsePayload = new JsonObject();
-
-            if (payload != null) {
-                JsonElement count = payload.get("count");
-
-                if (count.isJsonPrimitive() && count.getAsJsonPrimitive().isNumber()) {
-                    int lastCount = count.getAsJsonPrimitive().getAsInt();
-                    int next = lastCount + 1;
-                    responsePayload.addProperty("count", next);
-                } else {
-                    responsePayload.addProperty("error", "Didn't detect count in Gateway Delegate!");
-                }
-            } else {
-                responsePayload.addProperty("error",
-                    "Gateway didn't receive a payload with '" + INCOMING_EVENT_NAME + "' event!");
-            }
-            fireEvent(OUTBOUND_EVENT_NAME, responsePayload);
-        }
 
         if (INCOMING_EVENT_TAG_VALUE_RECEIVE.equals(message.getEventName())) {
             JsonObject payload = message.getEvent();
