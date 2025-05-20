@@ -1,8 +1,10 @@
 package org.fakester.gateway;
 
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,6 +63,27 @@ public class JythonExecutor {
         }
         
         return true;
+    }
+
+    public String readTagFromPath(String tagPathStr) throws InterruptedException, ExecutionException
+    {
+        var tagsManager = context.getTagManager().getTagProvider("default");
+
+        // Security level manager and configs
+        var securityManager = context.getSecurityLevelManager();
+        var securityLevelConfig = securityManager.getSecurityLevelsConfig();
+
+        SecurityContext securityContext = SecurityContext.fromSecurityLevels(securityLevelConfig);
+
+        List<TagPath> tagPaths = new ArrayList<>();
+        try {
+            tagPaths.add(TagPathParser.parse(tagPathStr));
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        return tagsManager.readAsync(tagPaths, securityContext).get().get(0).toString();
     }
 
     public String readTagValueX(String tagPathStr) {
