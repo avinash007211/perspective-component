@@ -4,6 +4,12 @@ import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
+import org.fakester.gateway.RadGatewayHook;
+import org.python.core.Py;
+import org.python.core.PyObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.inductiveautomation.ignition.common.gson.JsonElement;
 import com.inductiveautomation.ignition.common.gson.JsonObject;
 import com.inductiveautomation.ignition.common.script.builtin.KeywordArgs;
@@ -12,12 +18,6 @@ import com.inductiveautomation.perspective.gateway.api.Component;
 import com.inductiveautomation.perspective.gateway.api.ComponentModelDelegate;
 import com.inductiveautomation.perspective.gateway.api.ScriptCallable;
 import com.inductiveautomation.perspective.gateway.messages.EventFiredMsg;
-import org.python.core.Py;
-import org.python.core.PyObject;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.fakester.gateway.*;
 
 /**
  * Model Delegate for the Messenger component.
@@ -89,44 +89,37 @@ public class AWSInfraDelegate extends ComponentModelDelegate {
             logger.info("Inside the event aws at the gateway side");
 
             if (payload != null) {
-                JsonElement tagPath = payload.get("randomTagPath");
+                String[] tagKeys = {"counterTagPath", "randomTagPath"};
+                String[] responseKeys = {"counterValue", "randomValue"};
 
-                logger.info("TagPath is "+tagPath);
+                for (int i = 0; i < tagKeys.length; i++) {
+                    JsonElement tagPathElement = payload.get(tagKeys[i]);
 
-                if (tagPath.isJsonPrimitive() && tagPath.getAsJsonPrimitive().isString()) {
-                    String tagPathString = tagPath.getAsJsonPrimitive().getAsString();
+                    if (tagPathElement != null && tagPathElement.isJsonPrimitive() && tagPathElement.getAsJsonPrimitive().isString()) {
+                        String tagPath = tagPathElement.getAsJsonPrimitive().getAsString();
+                        logger.info("Reading tag at path: %s", tagPath);
 
-                    logger.info("TagPathString value  is : "+tagPathString);          
-
-                    String valueOfTag = "";
-                    try {
-                        valueOfTag = RadGatewayHook.jythonExecutor.readTagFromPath(tagPathString);
-                    } catch (InterruptedException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    } catch (ExecutionException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
+                        try {
+                            String value = RadGatewayHook.jythonExecutor.readTagFromPath(tagPath);
+                            logger.info("Value for %s: %s", responseKeys[i], value);
+                            responsePayload.addProperty(responseKeys[i], value);
+                        } catch (InterruptedException | ExecutionException e) {
+                            logger.error("Error reading tag: " + tagPath, e);
+                            responsePayload.addProperty("error_" + responseKeys[i], "Error reading tag: " + tagPath);
+                        }
+                    } else {
+                        responsePayload.addProperty("error_" + responseKeys[i], "Missing or invalid tag path for " + tagKeys[i]);
                     }
-
-                    logger.info("TagPath Value is : "+valueOfTag);
-
-                    if (valueOfTag != "")
-                    {
-                        responsePayload.addProperty("tagValue", valueOfTag);
-                    }                    
-                    //responsePayload.addProperty("tagValue", next);
-                } else {
-                    responsePayload.addProperty("error", "Didn't detect count in Gateway Delegate!");
                 }
             } else {
-                responsePayload.addProperty("error",
-                    "Gateway didn't receive a payload with '" + INCOMING_EVENT_NAME + "' event!");
+                responsePayload.addProperty("error", "Gateway didn't receive a payload with '" + INCOMING_EVENT_NAME + "' event!");
             }
+
             fireEvent(OUTBOUND_EVENT_TAG_VALUE_SEND, responsePayload);
-            logger.info("Value is sent");
+            logger.info("Tag values sent from gateway");
         }
     }
+
 
     // not necessary to override for our use case, just here for informational purposes
     @Override
