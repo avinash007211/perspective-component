@@ -86,8 +86,6 @@ public class AWSInfraDelegate extends ComponentModelDelegate {
             JsonObject payload = message.getEvent();
             JsonObject responsePayload = new JsonObject();
 
-            logger.info("Inside the event aws at the gateway side");
-
             if (payload != null) {
                 String[] tagKeys = {"counterTagPath", "randomTagPath"};
                 String[] responseKeys = {"counterValue", "randomValue"};
@@ -97,14 +95,11 @@ public class AWSInfraDelegate extends ComponentModelDelegate {
 
                     if (tagPathElement != null && tagPathElement.isJsonPrimitive() && tagPathElement.getAsJsonPrimitive().isString()) {
                         String tagPath = tagPathElement.getAsJsonPrimitive().getAsString();
-                        logger.info("Reading tag at path: %s", tagPath);
 
                         try {
                             String value = RadGatewayHook.jythonExecutor.readTagFromPath(tagPath);
-                            logger.info("Value for %s: %s", responseKeys[i], value);
                             responsePayload.addProperty(responseKeys[i], value);
                         } catch (InterruptedException | ExecutionException e) {
-                            logger.error("Error reading tag: " + tagPath, e);
                             responsePayload.addProperty("error_" + responseKeys[i], "Error reading tag: " + tagPath);
                         }
                     } else {
@@ -116,7 +111,6 @@ public class AWSInfraDelegate extends ComponentModelDelegate {
             }
 
             fireEvent(OUTBOUND_EVENT_TAG_VALUE_SEND, responsePayload);
-            logger.info("Tag values sent from gateway");
         }
     }
 

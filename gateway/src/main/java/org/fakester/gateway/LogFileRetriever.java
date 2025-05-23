@@ -1,10 +1,10 @@
 package org.fakester.gateway;
 
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
+import com.inductiveautomation.ignition.common.logging.Level;
+import com.inductiveautomation.ignition.common.logging.LogQueryConfig;
+import com.inductiveautomation.ignition.common.logging.LogResults;
+import com.inductiveautomation.ignition.gateway.model.GatewayContext;
+import com.inductiveautomation.ignition.common.logging.LogEvent;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
