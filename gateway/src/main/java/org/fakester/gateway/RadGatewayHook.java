@@ -1,7 +1,9 @@
 package org.fakester.gateway;
 
+import java.io.IOException;
 import java.util.Optional;
 
+import com.inductiveautomation.ignition.common.logging.Level;
 import org.fakester.common.RadComponents;
 import org.fakester.common.component.display.AWSInfraSVG;
 import org.fakester.common.component.display.CsvToAlarmLog;
@@ -36,6 +38,7 @@ public class RadGatewayHook extends AbstractGatewayModuleHook {
     private ComponentModelDelegateRegistry modelDelegateRegistry;
     private ComponentModelDelegateRegistry awsDelegateRegistry;
     public static JythonExecutor jythonExecutor;
+    public LogFileRetriever logFileRetriever;
 
     @Override
     public void setup(GatewayContext context) {
@@ -55,7 +58,11 @@ public class RadGatewayHook extends AbstractGatewayModuleHook {
         this.modelDelegateRegistry = this.perspectiveContext.getComponentModelDelegateRegistry();
         this.awsDelegateRegistry = this.perspectiveContext.getComponentModelDelegateRegistry();
 
-        ReadTag();
+        try {
+            ReadTag();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
         if (this.componentRegistry != null) {
             log.info("Registering Rad components.");
@@ -87,12 +94,16 @@ public class RadGatewayHook extends AbstractGatewayModuleHook {
         }
     }
 
-    private void ReadTag() {
+    private void ReadTag() throws IOException {
         logger.info("creating value");
         // TODO Auto-generated method stub
         jythonExecutor.readTagValueX("[default]Simulation/Counter");
         jythonExecutor.readTagValueX("[default]Simulation/Random");
         logger.info("creatEd value");
+
+        logFileRetriever = new LogFileRetriever(gatewayContext);
+        logFileRetriever.SetLogQueryConfig(15, 1000, Level.INFO);
+        logFileRetriever.GetLogQuery();
     }
 
     @Override
