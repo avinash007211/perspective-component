@@ -59,7 +59,7 @@ public class RadGatewayHook extends AbstractGatewayModuleHook {
         this.awsDelegateRegistry = this.perspectiveContext.getComponentModelDelegateRegistry();
 
         try {
-        ReadTag();
+            ReadTag();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
