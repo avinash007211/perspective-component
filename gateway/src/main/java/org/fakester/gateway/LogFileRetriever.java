@@ -1,19 +1,17 @@
 package org.fakester.gateway;
 
-import com.inductiveautomation.ignition.common.logging.Level;
-import com.inductiveautomation.ignition.common.logging.LogQueryConfig;
-import com.inductiveautomation.ignition.common.logging.LogResults;
-import com.inductiveautomation.ignition.gateway.model.GatewayContext;
-import com.inductiveautomation.ignition.common.logging.LogEvent;
-
-import java.io.Console;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Calendar;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.inductiveautomation.ignition.common.logging.Level;
+import com.inductiveautomation.ignition.common.logging.LogEvent;
+import com.inductiveautomation.ignition.common.logging.LogQueryConfig;
 import com.inductiveautomation.ignition.gateway.model.GatewayContext;
+
 
 public class LogFileRetriever {
 
